@@ -14,7 +14,7 @@ exports.adapt = adapt;
 (function (global){
 "use strict";
 var xstream_1 = (typeof window !== "undefined" ? window['xstream'] : typeof global !== "undefined" ? global['xstream'] : null);
-var adapt_1 = require('./adapt');
+var adapt_1 = require("./adapt");
 function logToConsoleError(err) {
     var target = err.stack || err;
     if (console && console.error) {
@@ -58,7 +58,7 @@ function replicateMany(sinks, sinkProxies) {
         };
     });
     var subscriptions = sinkNames
-        .map(function (name) { return sinks[name].subscribe(replicators[name]); });
+        .map(function (name) { return xstream_1.default.fromObservable(sinks[name]).subscribe(replicators[name]); });
     sinkNames.forEach(function (name) {
         var listener = sinkProxies[name];
         var next = function (x) { listener._n(x); };
@@ -81,8 +81,7 @@ function replicateMany(sinks, sinkProxies) {
 }
 function disposeSources(sources) {
     for (var k in sources) {
-        if (sources.hasOwnProperty(k) && sources[k]
-            && typeof sources[k].dispose === 'function') {
+        if (sources.hasOwnProperty(k) && sources[k] && sources[k].dispose) {
             sources[k].dispose();
         }
     }
